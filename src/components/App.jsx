@@ -1,18 +1,33 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { Layout } from './Layout';
 import { GlobalStyle } from './GlobalStyles';
-import initialValues from './Data/Contacts.json';
+import initialContacts from './Data/Contacts.json';
 import { capitalizedName } from './Utils/capitalizedName';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
 
 const INITIAL_STATE = {
-  contacts: initialValues,
+  contacts: [],
   filter: '',
 };
 export class App extends Component {
   state = { ...INITIAL_STATE };
+
+  componentDidMount() {
+    const savedContacts = localStorage.getItem('contacts');
+    if (savedContacts !== null) {
+      this.setState({ contacts: JSON.parse(savedContacts) });
+    } else {
+      this.setState({ contacts: initialContacts });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   addContact = newContact => {
     const isNameExsist = this.state.contacts.find(
@@ -74,4 +89,3 @@ export class App extends Component {
     );
   }
 }
-
